@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+
+  apione:
+    image: ${DOCKER_REGISTRY-}apione:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: apione/Dockerfile
+    ports:
+      - "60001:443"
+      - "50001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=12345
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ~/.aspnet/https:/https:ro
+      - "./components/:/components"
+      - "./config/:/config"
+  
+  apione-dapr:
+    image: "daprio/daprd:1.7.0"
+    command: ["./daprd",
+      "-app-id", "apione",
+      "-app-port", "80",
+      "-components-path", "/components",
+      "-config", "config.yaml"    
+      ]
+    depends_on:
+      - apione
+    network_mode: "service:apione"

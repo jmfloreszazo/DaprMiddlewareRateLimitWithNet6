@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "apione",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/weatherforecast",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "apione": "StartDebugging",
+        "apione-dapr": "StartWithoutDebugging"
+      }
+    }
+  }
+}
